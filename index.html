@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebSocket</title>
+</head>
+<body>
+  <h1>WebSocket</h1>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+       const username = '<%= username %>';
+
+      const socket = io({ query: { username } });
+
+      // Handle form submission
+      document.querySelector('form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const messageInput = document.querySelector('#message');
+        const message = messageInput.value.trim();
+
+        if (message) {
+          // Send the message to the server
+          socket.emit('message', message);
+          messageInput.value = '';
+        }
+      });
+
+      // Listen for incoming messages
+      socket.on('message', (data) => {
+        const messagesContainer = document.querySelector('#messages');
+        const messageElement = document.createElement('div');
+        messageElement.textContent = `${data.username}: ${data.message}`;
+        messagesContainer.appendChild(messageElement);
+      });
+    });
+  </script>
+  <form>
+    <label for="message">Message:</label>
+    <input type="text" id="message" autocomplete="off" />
+    <button type="submit">Send</button>
+  </form>
+  <div id="messages"></div>
+</body>
+</html>
