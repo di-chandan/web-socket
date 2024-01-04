@@ -1,46 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WebSocket</title>
-</head>
-<body>
-  <h1>WebSocket</h1>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-       const username = '<%= username %>';
+<h1>Real Time Messaging</h1>
+<pre id="messages" style="height: 400px; overflow: scroll"></pre>
+<input type="text" id="messageBox" placeholder="Type your message here" style="display: block; width: 100%; margin-bottom: 10px; padding: 10px;" />
+<button id="send" title="Send Message!" style="width: 100%; height: 30px;">Send Message</button>
 
-      const socket = io({ query: { username } });
+<script>
+  (function() {
+    const sendBtn = document.querySelector('#send');
+    const messages = document.querySelector('#messages');
+    const messageBox = document.querySelector('#messageBox');
 
-      // Handle form submission
-      document.querySelector('form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const messageInput = document.querySelector('#message');
-        const message = messageInput.value.trim();
+    let ws;
 
-        if (message) {
-          // Send the message to the server
-          socket.emit('message', message);
-          messageInput.value = '';
-        }
-      });
+    function showMessage(message) {
+	  console.log(message);
+      messages.textContent += `\n\n${message}`;
+      messages.scrollTop = messages.scrollHeight;
+      messageBox.value = '';
+    }
 
-      // Listen for incoming messages
-      socket.on('message', (data) => {
-        const messagesContainer = document.querySelector('#messages');
-        const messageElement = document.createElement('div');
-        messageElement.textContent = `${data.username}: ${data.message}`;
-        messagesContainer.appendChild(messageElement);
-      });
-    });
-  </script>
-  <form>
-    <label for="message">Message:</label>
-    <input type="text" id="message" autocomplete="off" />
-    <button type="submit">Send</button>
-  </form>
-  <div id="messages"></div>
-</body>
-</html>
+    function init() {
+      if (ws) {
+        ws.onerror = ws.onopen = ws.onclose = null;
+        ws.close();
+      }
+
+      ws = new WebSocket('ws://localhost:6969');
+      ws.onopen = () => {
+        console.log('Connection opened!');
+      }
+      ws.onmessage = ({ data }) => {
+		  if (data instanceof Blob) {
+			// Convert Blob to string
+			data.text().then((text) => {
+			  showMessage(text);
+			});
+		  } else {
+			// If it's not a Blob, assume it's already a string
+			showMessage(data);
+		  }
+		};
+      ws.onclose = function() {
+        ws = null;
+      }
+    }
+
+    sendBtn.onclick = function() {
+      if (!ws) {
+        showMessage("No WebSocket connection :(");
+        return ;
+      }
+
+      ws.send(messageBox.value);
+      showMessage(messageBox.value);
+    }
+
+    init();
+  })();
+</script>
