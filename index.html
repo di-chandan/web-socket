@@ -30,16 +30,17 @@
         console.log('Connection opened!');
       }
       ws.onmessage = ({ data }) => {
-		  if (data instanceof Blob) {
-			// Convert Blob to string
-			data.text().then((text) => {
-			  showMessage(text);
-			});
-		  } else {
-			// If it's not a Blob, assume it's already a string
-			showMessage(data);
-		  }
-		};
+  if (data instanceof Blob) {
+    // Convert Blob to string
+    data.text().then((text) => {
+      showMessage(text);
+    });
+  } else {
+    // If it's not a Blob, assume it's already a string
+    showMessage(data);
+  }
+};
+
       ws.onclose = function() {
         ws = null;
       }
