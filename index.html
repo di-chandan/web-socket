@@ -32,7 +32,7 @@
       ws.onmessage = ({ data }) => {
 		  if (data instanceof Blob) {
 			// Convert Blob to string
-			data.text().then((text) => {
+			data.html().then((text) => {
 			  showMessage(text);
 			});
 		  } else {
