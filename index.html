@@ -51,8 +51,8 @@
         return ;
       }
 
-      ws.send(`${user}:: ${messageBox.value}`);
-      showMessage(`${user}:: ${messageBox.value}`);
+      ws.send(`<strong>${user}::</strong> ${messageBox.value}`);
+      showMessage(`<strong>${user}::</strong> ${messageBox.value}`);
     }
 
     init();
