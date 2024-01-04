@@ -14,7 +14,7 @@
 
     function showMessage(message) {
 	  console.log(message);
-      messages.textContent += `\n\n${message}`;
+      messages.textContent += `<br>${message}`;
       messages.scrollTop = messages.scrollHeight;
       messageBox.value = '';
     }
