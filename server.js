@@ -1,21 +1,8 @@
-const express = require('express');
-const http = require('http');
 const WebSocket = require('ws');
+const server = new WebSocket.Server({ port: 3000 });
 
-const port = 6969;
-const server = http.createServer(express);
-const wss = new WebSocket.Server({ server })
+server.on('connection', (ws) => {
+    ws.send('WebSocket is working on Replit!');
+});
 
-wss.on('connection', function connection(ws) {
-  ws.on('message', function incoming(data) {
-    wss.clients.forEach(function each(client) {
-      if (client !== ws && client.readyState === WebSocket.OPEN) {
-        client.send(data);
-      }
-    })
-  })
-})
- 
-server.listen(port, function() {
-  console.log(`Server is listening on ${port}!`)
-})
+console.log('WebSocket server started...');
